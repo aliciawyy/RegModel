@@ -56,7 +56,8 @@ In the new model, there is no strong evidence that the coefficient of the variab
 With the same strategy, we can now eliminate the variable largest p-value as `carb`, `gear`, `drat` `disp`, `hp` and the intercept in order and refit the model. The final model is
 
 ```r
-fit <- lm(mpg ~ wt + qsec + am - 1, data = mtcars)
+dat <- mtcars[, c("mpg", "wt", "qsec", "am")]
+fit <- lm(mpg ~ . - 1, data = dat)
 summary(fit)$coefficients
 ```
 
@@ -69,12 +70,51 @@ summary(fit)$coefficients
 
 It includes only `wt`, `qsec` and `am` in predicting the miles per gallon of a vehicle
 $$
-\hat y = 1.5998 x_{wt} + 1.5998 x_{qsec} + 4.2995 x_{am}
+\hat y = -3.1855 x_{wt} + 1.5998 x_{qsec} + 4.2995 x_{am}
 $$
+Where $x_{wt}$, $x_{qsec}$ and $x_{am}$ represent the variables `wt`, `qsec` and `am`.
 
+As the two-sided p-value for the coefficient of `am` is 2.3294 &times; 10<sup>-4</sup>, much smaller than 0.05, we have enough evidence to reject the hypothesis $H_0$.
+
+## Exploratory Analysis
+
+Before we draw a conclusion of the final model obtained, we can check the relation between `mpg` and the three variables in our final model again.
+
+```r
+pairs(dat, panel = panel.smooth, main = "mtcars data")
+```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3.png) 
+
+As shown in the figure above, the linear relationship bewteen `mpg` and the three variables is quite strong. We can also plot the residual and other variations of the final fit
+
+```r
+par(mfrow = c(2, 2))
+plot(fit)
+```
+
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
+
+We note that the residuals show no obvious pattern, so it is reasonable to try to fit a linear model to the data.
+
+## Summary
+Now with all the previous analysis, we can conclude that our linear model is a resonable fit. As
+
+```r
+sumCoef <- summary(fit)$coefficients
+intv <- sumCoef["am", 1] + c(-1, 1) * qt(0.975, df = fit$df) * sumCoef["am", 
+    2]
+intv
+```
+
+```
+## [1] 2.205 6.394
+```
+
+With 95% confidence, we estimate that a the change from automatic to manual transmission results in a 2.2 to 6.39 increase in miles per gallon for the cars. In conclusion, the manual transmission is better than automatic transmission for mpg.
 
 -----------
-## Appendix A. Model Selection details
+## Appendix A. Model Selection Details
 
 ```r
 dat <- mtcars
@@ -201,3 +241,7 @@ summary(lm(mpg ~ . - 1, data = dat))$coefficients
 ```
 
 As the p-value of all the remaining predictors are smaller than $0.05$, we can stop.
+
+## Appendix B.
+
+All the code of this document can be found at [github](https://github.com/aliciawyy/RegModel).
