@@ -30,21 +30,31 @@ $H_A$ : $\beta_1 \neq 0$. The true linear model has the slope different from zer
 
 Let's first do a multivarible regression as following
 ```{r}
-dat <- mtcars
-summary(lm(mpg ~ ., data = dat))$coefficients
+summary(lm(mpg ~ ., data = mtcars))$coefficients
 ```
-We will then use the **backward-elimination** strategy to eliminate the unrelated variables one-at-a-time. It means, we first fit a model which includes all the potential variables as above, now we drop the variable `cyl` as it has the largest p-value, then we refit the model
+We will then use the **backward-elimination** strategy to eliminate the unrelated variables one-at-a-time. It means, we first fit a model which includes all the potential variables as above, now we drop the variable `cyl` as it has the largest p-value, then we refit the model. All the details of the model selection is attached in Appendix A.
+
+In the new model, there is no strong evidence that the coefficient of the variable `vs` is different from zero even though its p-value decreased a little bit, so we again eliminate the variable with the largest p-value `vs` and refit the model
+
+With the same strategy, we can now eliminate the variable largest p-value as `carb`, `gear`, `drat` `disp`, `hp` and the intercept in order and refit the model. The final model is
 ```{r}
+fit <- lm(mpg ~ wt + qsec + am - 1, data = mtcars)
+summary(fit)$coefficients
+```
+It includes only `wt`, `qsec` and `am` in predicting the miles per gallon of a vehicle
+$$
+\hat y = `r fit$coef["qsec"]` x_{wt} + `r fit$coef["qsec"]` x_{qsec} + `r fit$coef["am"]` x_{am}
+$$
+
+
+-----------
+## Appendix A. Model Selection details
+```{r}
+dat <- mtcars
 dat <- dat[, names(dat) != "cyl"]
 summary(lm(mpg ~ ., data = dat))$coefficients
-```
-In the new model, there is no strong evidence that the coefficient of the variable `vs` is different from zero even though its p-value decreased a little bit, so we again eliminate the variable with the largest p-value `vs` and refit the model
-```{r}
 dat <- dat[, names(dat) != "vs"]
 summary(lm(mpg ~ ., data = dat))$coefficients
-```
-With the same strategy, we can now eliminate the variable largest p-value as `carb`, `gear`, `drat` `disp`, `hp` and the intercept in order and refit the model
-```{r}
 dat <- dat[, names(dat) != "carb"]
 summary(lm(mpg ~ ., data = dat))$coefficients
 dat <- dat[, names(dat) != "gear"]
@@ -57,4 +67,4 @@ dat <- dat[, names(dat) != "hp"]
 summary(lm(mpg ~ ., data = dat))$coefficients 
 summary(lm(mpg ~ . -1, data = dat))$coefficients 
 ```
-
+As the p-value of all the remaining predictors are smaller than $0.05$, we can stop.

@@ -218,8 +218,7 @@ hljs.initHighlightingOnLoad();
 
 <p>Let&#39;s first do a multivarible regression as following</p>
 
-<pre><code class="r">dat &lt;- mtcars
-summary(lm(mpg ~ ., data = dat))$coefficients
+<pre><code class="r">summary(lm(mpg ~ ., data = mtcars))$coefficients
 </code></pre>
 
 <pre><code>##             Estimate Std. Error t value Pr(&gt;|t|)
@@ -236,9 +235,33 @@ summary(lm(mpg ~ ., data = dat))$coefficients
 ## carb        -0.19942    0.82875 -0.2406  0.81218
 </code></pre>
 
-<p>We will then use the <strong>backward-elimination</strong> strategy to eliminate the unrelated variables one-at-a-time. It means, we first fit a model which includes all the potential variables as above, now we drop the variable <code>cyl</code> as it has the largest p-value, then we refit the model</p>
+<p>We will then use the <strong>backward-elimination</strong> strategy to eliminate the unrelated variables one-at-a-time. It means, we first fit a model which includes all the potential variables as above, now we drop the variable <code>cyl</code> as it has the largest p-value, then we refit the model. All the details of the model selection is attached in Appendix A.</p>
 
-<pre><code class="r">dat &lt;- dat[, names(dat) != &quot;cyl&quot;]
+<p>In the new model, there is no strong evidence that the coefficient of the variable <code>vs</code> is different from zero even though its p-value decreased a little bit, so we again eliminate the variable with the largest p-value <code>vs</code> and refit the model</p>
+
+<p>With the same strategy, we can now eliminate the variable largest p-value as <code>carb</code>, <code>gear</code>, <code>drat</code> <code>disp</code>, <code>hp</code> and the intercept in order and refit the model. The final model is</p>
+
+<pre><code class="r">fit &lt;- lm(mpg ~ wt + qsec + am - 1, data = mtcars)
+summary(fit)$coefficients
+</code></pre>
+
+<pre><code>##      Estimate Std. Error t value  Pr(&gt;|t|)
+## wt     -3.185     0.4828  -6.598 3.129e-07
+## qsec    1.600     0.1021  15.665 1.092e-15
+## am      4.300     1.0241   4.198 2.329e-04
+</code></pre>
+
+<p>It includes only <code>wt</code>, <code>qsec</code> and <code>am</code> in predicting the miles per gallon of a vehicle
+\[ 
+\hat y = 1.5998 x_{wt} + 1.5998 x_{qsec} + 4.2995 x_{am}
+ \]</p>
+
+<hr/>
+
+<h2>Appendix A. Model Selection details</h2>
+
+<pre><code class="r">dat &lt;- mtcars
+dat &lt;- dat[, names(dat) != &quot;cyl&quot;]
 summary(lm(mpg ~ ., data = dat))$coefficients
 </code></pre>
 
@@ -255,8 +278,6 @@ summary(lm(mpg ~ ., data = dat))$coefficients
 ## carb        -0.21958    0.78856 -0.2785  0.78326
 </code></pre>
 
-<p>In the new model, there is no strong evidence that the coefficient of the variable <code>vs</code> is different from zero even though its p-value decreased a little bit, so we again eliminate the variable with the largest p-value <code>vs</code> and refit the model</p>
-
 <pre><code class="r">dat &lt;- dat[, names(dat) != &quot;vs&quot;]
 summary(lm(mpg ~ ., data = dat))$coefficients
 </code></pre>
@@ -272,8 +293,6 @@ summary(lm(mpg ~ ., data = dat))$coefficients
 ## gear         0.75984    1.31577  0.5775  0.56922
 ## carb        -0.24796    0.75933 -0.3266  0.74696
 </code></pre>
-
-<p>With the same strategy, we can now eliminate the variable largest p-value as <code>carb</code>, <code>gear</code>, <code>drat</code> <code>disp</code>, <code>hp</code> and the intercept in order and refit the model</p>
 
 <pre><code class="r">dat &lt;- dat[, names(dat) != &quot;carb&quot;]
 summary(lm(mpg ~ ., data = dat))$coefficients
@@ -348,6 +367,8 @@ summary(lm(mpg ~ ., data = dat))$coefficients
 ## qsec    1.600     0.1021  15.665 1.092e-15
 ## am      4.300     1.0241   4.198 2.329e-04
 </code></pre>
+
+<p>As the p-value of all the remaining predictors are smaller than \( 0.05 \), we can stop.</p>
 
 </body>
 
