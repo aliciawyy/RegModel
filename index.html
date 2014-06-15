@@ -181,9 +181,28 @@ hljs.initHighlightingOnLoad();
 <body>
 <h1>Is an automatic or manual transmission better for MPG ?</h1>
 
-<p>This is an R Markdown document. Markdown is a simple formatting syntax for authoring web pages (click the <strong>Help</strong> toolbar button for more details on using R Markdown).</p>
+<p>In this study, we are paricularly interested in answering the two questions below</p>
 
-<p>When you click the <strong>Knit HTML</strong> button a web page will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</p>
+<ul>
+<li>Is an automatic or manual transmission better for miles/(US) gallon (MPG) ?</li>
+<li>Quantifying how different is the MPG between automatic and manual transmissions?</li>
+</ul>
+
+<p>Our dataset <code>mtcars</code> contains <strong>32</strong> observations on  the following <strong>11</strong> variables.</p>
+
+<ul>
+<li>[, 1]  <code>mpg</code>   Miles/(US) gallon</li>
+<li>[, 2]  <code>cyl</code>   Number of cylinders</li>
+<li>[, 3]  <code>disp</code>  Displacement (cu.in.)</li>
+<li>[, 4]  <code>hp</code>    Gross horsepower</li>
+<li>[, 5]  <code>drat</code>  Rear axle ratio</li>
+<li>[, 6]  <code>wt</code>    Weight (lb/1000)</li>
+<li>[, 7]  <code>qsec</code>  &frac14; mile time</li>
+<li>[, 8]  <code>vs</code>    V/S</li>
+<li>[, 9]  <code>am</code>    Transmission (0 = automatic, 1 = manual)</li>
+<li>[,10]  <code>gear</code>  Number of forward gears</li>
+<li>[,11]  <code>carb</code>  Number of carburetors</li>
+</ul>
 
 <pre><code class="r">str(mtcars)
 </code></pre>
@@ -200,6 +219,16 @@ hljs.initHighlightingOnLoad();
 ##  $ am  : num  1 1 1 0 0 0 0 0 0 0 ...
 ##  $ gear: num  4 4 4 3 3 3 3 4 4 4 ...
 ##  $ carb: num  4 4 1 1 2 1 4 2 2 4 ...
+</code></pre>
+
+<p>Let&#39;s first do an unadjusted regression, for which we suppose that the <code>mpg</code> only depends linearly on the transmission of the car <code>am</code> is manual or automatic the coefficients will be</p>
+
+<pre><code class="r">summary(lm(mpg ~ am, data = mtcars))$coefficients
+</code></pre>
+
+<pre><code>##             Estimate Std. Error t value  Pr(&gt;|t|)
+## (Intercept)   17.147      1.125  15.247 1.134e-15
+## am             7.245      1.764   4.106 2.850e-04
 </code></pre>
 
 </body>

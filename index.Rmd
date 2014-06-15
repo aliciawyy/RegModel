@@ -1,11 +1,31 @@
 Is an automatic or manual transmission better for MPG ?
 ========================================================
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring web pages (click the **Help** toolbar button for more details on using R Markdown).
+In this study, we are paricularly interested in answering the two questions below
 
-When you click the **Knit HTML** button a web page will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+* Is an automatic or manual transmission better for miles/(US) gallon (MPG) ?
+* Quantifying how different is the MPG between automatic and manual transmissions?
+
+Our dataset `mtcars` contains **`r nrow(mtcars)`** observations on  the following **`r ncol(mtcars)`** variables.
+* [, 1]  `mpg`	 Miles/(US) gallon
+* [, 2]	 `cyl`	 Number of cylinders
+* [, 3]	 `disp`	 Displacement (cu.in.)
+* [, 4]	 `hp`	 Gross horsepower
+* [, 5]	 `drat`	 Rear axle ratio
+* [, 6]	 `wt`	 Weight (lb/1000)
+* [, 7]	 `qsec`	 1/4 mile time
+* [, 8]	 `vs`	 V/S
+* [, 9]	 `am`	 Transmission (0 = automatic, 1 = manual)
+* [,10]	 `gear`	 Number of forward gears
+* [,11]	 `carb`	 Number of carburetors
 
 ```{r}
 str(mtcars)
 ```
+Let's first do a multivarible regression as following
+```{r}
+summary(lm(mpg ~ am, data = mtcars))$coefficients
+```
+Then we will use the **backward-elimination** strategy to eliminate the unrelated variables one-at-a-time. 
+
 

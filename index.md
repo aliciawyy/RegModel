@@ -1,9 +1,23 @@
 Is an automatic or manual transmission better for MPG ?
 ========================================================
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring web pages (click the **Help** toolbar button for more details on using R Markdown).
+In this study, we are paricularly interested in answering the two questions below
 
-When you click the **Knit HTML** button a web page will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+* Is an automatic or manual transmission better for miles/(US) gallon (MPG) ?
+* Quantifying how different is the MPG between automatic and manual transmissions?
+
+Our dataset `mtcars` contains **32** observations on  the following **11** variables.
+* [, 1]  `mpg`	 Miles/(US) gallon
+* [, 2]	 `cyl`	 Number of cylinders
+* [, 3]	 `disp`	 Displacement (cu.in.)
+* [, 4]	 `hp`	 Gross horsepower
+* [, 5]	 `drat`	 Rear axle ratio
+* [, 6]	 `wt`	 Weight (lb/1000)
+* [, 7]	 `qsec`	 1/4 mile time
+* [, 8]	 `vs`	 V/S
+* [, 9]	 `am`	 Transmission (0 = automatic, 1 = manual)
+* [,10]	 `gear`	 Number of forward gears
+* [,11]	 `carb`	 Number of carburetors
 
 
 ```r
@@ -24,5 +38,18 @@ str(mtcars)
 ##  $ gear: num  4 4 4 3 3 3 3 4 4 4 ...
 ##  $ carb: num  4 4 1 1 2 1 4 2 2 4 ...
 ```
+
+Let's first do an unadjusted regression, for which we suppose that the `mpg` only depends linearly on the transmission of the car `am` is manual or automatic the coefficients will be
+
+```r
+summary(lm(mpg ~ am, data = mtcars))$coefficients
+```
+
+```
+##             Estimate Std. Error t value  Pr(>|t|)
+## (Intercept)   17.147      1.125  15.247 1.134e-15
+## am             7.245      1.764   4.106 2.850e-04
+```
+
 
 
