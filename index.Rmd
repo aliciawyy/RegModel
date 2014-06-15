@@ -19,13 +19,42 @@ Our dataset `mtcars` contains **`r nrow(mtcars)`** observations on  the followin
 * [,10]	 `gear`	 Number of forward gears
 * [,11]	 `carb`	 Number of carburetors
 
-```{r}
-str(mtcars)
-```
+We can frame this into a **two-sided statistical hypothesis test** :
+
+$H_O$ : $\beta_1 = 0$. The true linear model has the slope zero for `am`, which means that the transmission mode does not relate to the number of miles per gallon of the car.
+
+$H_A$ : $\beta_1 \neq 0$. The true linear model has the slope different from zero for `am`. If $\beta_1$ is positive, it means manual transmission can have $\beta_1$ **more** mpg in comparison with automatic mode. If $\beta_1$ is negative, the manual transmission will have $\beta_1$ **less** mpg than automatic mode.
+
+
+## Model Selection
+
 Let's first do a multivarible regression as following
 ```{r}
-summary(lm(mpg ~ am, data = mtcars))$coefficients
+dat <- mtcars
+summary(lm(mpg ~ ., data = dat))$coefficients
 ```
-Then we will use the **backward-elimination** strategy to eliminate the unrelated variables one-at-a-time. 
-
+We will then use the **backward-elimination** strategy to eliminate the unrelated variables one-at-a-time. It means, we first fit a model which includes all the potential variables as above, now we drop the variable `cyl` as it has the largest p-value, then we refit the model
+```{r}
+dat <- dat[, names(dat) != "cyl"]
+summary(lm(mpg ~ ., data = dat))$coefficients
+```
+In the new model, there is no strong evidence that the coefficient of the variable `vs` is different from zero even though its p-value decreased a little bit, so we again eliminate the variable with the largest p-value `vs` and refit the model
+```{r}
+dat <- dat[, names(dat) != "vs"]
+summary(lm(mpg ~ ., data = dat))$coefficients
+```
+With the same strategy, we can now eliminate the variable largest p-value as `carb`, `gear`, `drat` `disp`, `hp` and the intercept in order and refit the model
+```{r}
+dat <- dat[, names(dat) != "carb"]
+summary(lm(mpg ~ ., data = dat))$coefficients
+dat <- dat[, names(dat) != "gear"]
+summary(lm(mpg ~ ., data = dat))$coefficients
+dat <- dat[, names(dat) != "drat"]
+summary(lm(mpg ~ ., data = dat))$coefficients
+dat <- dat[, names(dat) != "disp"]
+summary(lm(mpg ~ ., data = dat))$coefficients 
+dat <- dat[, names(dat) != "hp"]
+summary(lm(mpg ~ ., data = dat))$coefficients 
+summary(lm(mpg ~ . -1, data = dat))$coefficients 
+```
 

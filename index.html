@@ -174,6 +174,10 @@ hljs.initHighlightingOnLoad();
 </script>
 
 
+<!-- MathJax scripts -->
+<script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
 
 
 </head>
@@ -204,31 +208,145 @@ hljs.initHighlightingOnLoad();
 <li>[,11]  <code>carb</code>  Number of carburetors</li>
 </ul>
 
-<pre><code class="r">str(mtcars)
+<p>We can frame this into a <strong>two-sided statistical hypothesis test</strong> :</p>
+
+<p>\( H_O \) : \( \beta_1 = 0 \). The true linear model has the slope zero for <code>am</code>, which means that the transmission mode does not relate to the number of miles per gallon of the car.</p>
+
+<p>\( H_A \) : \( \beta_1 \neq 0 \). The true linear model has the slope different from zero for <code>am</code>. If \( \beta_1 \) is positive, it means manual transmission can have \( \beta_1 \) <strong>more</strong> mpg in comparison with automatic mode. If \( \beta_1 \) is negative, the manual transmission will have \( \beta_1 \) <strong>less</strong> mpg than automatic mode.</p>
+
+<h2>Model Selection</h2>
+
+<p>Let&#39;s first do a multivarible regression as following</p>
+
+<pre><code class="r">dat &lt;- mtcars
+summary(lm(mpg ~ ., data = dat))$coefficients
 </code></pre>
 
-<pre><code>## &#39;data.frame&#39;:    32 obs. of  11 variables:
-##  $ mpg : num  21 21 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 ...
-##  $ cyl : num  6 6 4 6 8 6 8 4 4 6 ...
-##  $ disp: num  160 160 108 258 360 ...
-##  $ hp  : num  110 110 93 110 175 105 245 62 95 123 ...
-##  $ drat: num  3.9 3.9 3.85 3.08 3.15 2.76 3.21 3.69 3.92 3.92 ...
-##  $ wt  : num  2.62 2.88 2.32 3.21 3.44 ...
-##  $ qsec: num  16.5 17 18.6 19.4 17 ...
-##  $ vs  : num  0 0 1 1 0 1 0 1 1 1 ...
-##  $ am  : num  1 1 1 0 0 0 0 0 0 0 ...
-##  $ gear: num  4 4 4 3 3 3 3 4 4 4 ...
-##  $ carb: num  4 4 1 1 2 1 4 2 2 4 ...
+<pre><code>##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) 12.30337   18.71788  0.6573  0.51812
+## cyl         -0.11144    1.04502 -0.1066  0.91609
+## disp         0.01334    0.01786  0.7468  0.46349
+## hp          -0.02148    0.02177 -0.9868  0.33496
+## drat         0.78711    1.63537  0.4813  0.63528
+## wt          -3.71530    1.89441 -1.9612  0.06325
+## qsec         0.82104    0.73084  1.1234  0.27394
+## vs           0.31776    2.10451  0.1510  0.88142
+## am           2.52023    2.05665  1.2254  0.23399
+## gear         0.65541    1.49326  0.4389  0.66521
+## carb        -0.19942    0.82875 -0.2406  0.81218
 </code></pre>
 
-<p>Let&#39;s first do an unadjusted regression, for which we suppose that the <code>mpg</code> only depends linearly on the transmission of the car <code>am</code> is manual or automatic the coefficients will be</p>
+<p>We will then use the <strong>backward-elimination</strong> strategy to eliminate the unrelated variables one-at-a-time. It means, we first fit a model which includes all the potential variables as above, now we drop the variable <code>cyl</code> as it has the largest p-value, then we refit the model</p>
 
-<pre><code class="r">summary(lm(mpg ~ am, data = mtcars))$coefficients
+<pre><code class="r">dat &lt;- dat[, names(dat) != &quot;cyl&quot;]
+summary(lm(mpg ~ ., data = dat))$coefficients
+</code></pre>
+
+<pre><code>##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) 10.96007   13.53030  0.8100  0.42659
+## disp         0.01283    0.01682  0.7626  0.45381
+## hp          -0.02191    0.02091 -1.0477  0.30615
+## drat         0.83520    1.53625  0.5437  0.59214
+## wt          -3.69251    1.83954 -2.0073  0.05716
+## qsec         0.84244    0.68678  1.2267  0.23292
+## vs           0.38975    1.94800  0.2001  0.84326
+## am           2.57743    1.94035  1.3283  0.19768
+## gear         0.71155    1.36562  0.5210  0.60754
+## carb        -0.21958    0.78856 -0.2785  0.78326
+</code></pre>
+
+<p>In the new model, there is no strong evidence that the coefficient of the variable <code>vs</code> is different from zero even though its p-value decreased a little bit, so we again eliminate the variable with the largest p-value <code>vs</code> and refit the model</p>
+
+<pre><code class="r">dat &lt;- dat[, names(dat) != &quot;vs&quot;]
+summary(lm(mpg ~ ., data = dat))$coefficients
+</code></pre>
+
+<pre><code>##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)  9.76828   11.89230  0.8214  0.41985
+## disp         0.01214    0.01612  0.7532  0.45897
+## hp          -0.02095    0.01993 -1.0514  0.30399
+## drat         0.87510    1.49113  0.5869  0.56301
+## wt          -3.71151    1.79834 -2.0639  0.05049
+## qsec         0.91083    0.58312  1.5620  0.13195
+## am           2.52390    1.88128  1.3416  0.19283
+## gear         0.75984    1.31577  0.5775  0.56922
+## carb        -0.24796    0.75933 -0.3266  0.74696
+</code></pre>
+
+<p>With the same strategy, we can now eliminate the variable largest p-value as <code>carb</code>, <code>gear</code>, <code>drat</code> <code>disp</code>, <code>hp</code> and the intercept in order and refit the model</p>
+
+<pre><code class="r">dat &lt;- dat[, names(dat) != &quot;carb&quot;]
+summary(lm(mpg ~ ., data = dat))$coefficients
+</code></pre>
+
+<pre><code>##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)  9.19763   11.54220  0.7969 0.433340
+## disp         0.01552    0.01214  1.2782 0.213420
+## hp          -0.02471    0.01596 -1.5478 0.134763
+## drat         0.81023    1.45007  0.5588 0.581508
+## wt          -4.13065    1.23593 -3.3421 0.002717
+## qsec         1.00979    0.48883  2.0657 0.049815
+## am           2.58980    1.83528  1.4111 0.171042
+## gear         0.60644    1.20596  0.5029 0.619641
+</code></pre>
+
+<pre><code class="r">dat &lt;- dat[, names(dat) != &quot;gear&quot;]
+summary(lm(mpg ~ ., data = dat))$coefficients
+</code></pre>
+
+<pre><code>##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)  10.7106   10.97539  0.9759 0.338475
+## disp          0.0131    0.01098  1.1930 0.244054
+## hp           -0.0218    0.01465 -1.4875 0.149381
+## drat          1.0207    1.36748  0.7464 0.462401
+## wt           -4.0445    1.20558 -3.3548 0.002536
+## qsec          0.9907    0.48002  2.0639 0.049551
+## am            2.9847    1.63382  1.8268 0.079692
+</code></pre>
+
+<pre><code class="r">dat &lt;- dat[, names(dat) != &quot;drat&quot;]
+summary(lm(mpg ~ ., data = dat))$coefficients
+</code></pre>
+
+<pre><code>##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) 14.36190     9.7408   1.474 0.152378
+## disp         0.01124     0.0106   1.060 0.298972
+## hp          -0.02117     0.0145  -1.460 0.156387
+## wt          -4.08433     1.1941  -3.420 0.002075
+## qsec         1.00690     0.4754   2.118 0.043908
+## am           3.47045     1.4858   2.336 0.027488
+</code></pre>
+
+<pre><code class="r">dat &lt;- dat[, names(dat) != &quot;disp&quot;]
+summary(lm(mpg ~ ., data = dat))$coefficients
+</code></pre>
+
+<pre><code>##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) 17.44019    9.31887   1.871 0.072149
+## hp          -0.01765    0.01415  -1.247 0.223088
+## wt          -3.23810    0.88990  -3.639 0.001141
+## qsec         0.81060    0.43887   1.847 0.075731
+## am           2.92550    1.39715   2.094 0.045791
+</code></pre>
+
+<pre><code class="r">dat &lt;- dat[, names(dat) != &quot;hp&quot;]
+summary(lm(mpg ~ ., data = dat))$coefficients
 </code></pre>
 
 <pre><code>##             Estimate Std. Error t value  Pr(&gt;|t|)
-## (Intercept)   17.147      1.125  15.247 1.134e-15
-## am             7.245      1.764   4.106 2.850e-04
+## (Intercept)    9.618     6.9596   1.382 1.779e-01
+## wt            -3.917     0.7112  -5.507 6.953e-06
+## qsec           1.226     0.2887   4.247 2.162e-04
+## am             2.936     1.4109   2.081 4.672e-02
+</code></pre>
+
+<pre><code class="r">summary(lm(mpg ~ . - 1, data = dat))$coefficients
+</code></pre>
+
+<pre><code>##      Estimate Std. Error t value  Pr(&gt;|t|)
+## wt     -3.185     0.4828  -6.598 3.129e-07
+## qsec    1.600     0.1021  15.665 1.092e-15
+## am      4.300     1.0241   4.198 2.329e-04
 </code></pre>
 
 </body>
