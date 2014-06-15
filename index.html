@@ -185,12 +185,18 @@ hljs.initHighlightingOnLoad();
 <body>
 <h1>Is an automatic or manual transmission better for MPG ?</h1>
 
+<h2>Summary</h2>
+
 <p>In this study, we are paricularly interested in answering the two questions below</p>
 
 <ul>
 <li>Is an automatic or manual transmission better for miles/(US) gallon (MPG) ?</li>
 <li>Quantifying how different is the MPG between automatic and manual transmissions?</li>
 </ul>
+
+<p>The analysis of these two questions contain three parts. First we will set the statistical frame of these problems, then we will use the <em>backward-elimination</em> strategy to choose the best fit model. After this, we will check the final model with different diagnostic tools and visualize the data and its residuals.</p>
+
+<h2>Statistical Frame</h2>
 
 <p>Our dataset <code>mtcars</code> contains <strong>32</strong> observations on  the following <strong>11</strong> variables.</p>
 
@@ -235,7 +241,7 @@ hljs.initHighlightingOnLoad();
 ## carb        -0.19942    0.82875 -0.2406  0.81218
 </code></pre>
 
-<p>We will then use the <strong>backward-elimination</strong> strategy to eliminate the unrelated variables one-at-a-time. It means, we first fit a model which includes all the potential variables as above, now we drop the variable <code>cyl</code> as it has the largest p-value, then we refit the model. All the details of the model selection is attached in Appendix A.</p>
+<p>We will then use the <strong>backward-elimination</strong> strategy to eliminate the unrelated variables one-at-a-time. It means, we first fit a model which includes all the potential variables as above, now we drop the variable <code>cyl</code> as it has the largest p-value, then we refit the model. All the details of the model selection are attached in Appendix A.</p>
 
 <p>In the new model, there is no strong evidence that the coefficient of the variable <code>vs</code> is different from zero even though its p-value decreased a little bit, so we again eliminate the variable with the largest p-value <code>vs</code> and refit the model</p>
 
@@ -279,7 +285,7 @@ plot(fit)
 
 <p>We note that the residuals show no obvious pattern, so it is reasonable to try to fit a linear model to the data.</p>
 
-<h2>Summary</h2>
+<h2>Conclusion</h2>
 
 <p>Now with all the previous analysis, we can conclude that our linear model is a resonable fit. As</p>
 

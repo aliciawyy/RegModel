@@ -1,11 +1,15 @@
 Is an automatic or manual transmission better for MPG ?
 ========================================================
 
+## Summary
 In this study, we are paricularly interested in answering the two questions below
 
 * Is an automatic or manual transmission better for miles/(US) gallon (MPG) ?
 * Quantifying how different is the MPG between automatic and manual transmissions?
 
+The analysis of these two questions contain three parts. First we will set the statistical frame of these problems, then we will use the *backward-elimination* strategy to choose the best fit model. After this, we will check the final model with different diagnostic tools and visualize the data and its residuals.
+
+## Statistical Frame
 Our dataset `mtcars` contains **32** observations on  the following **11** variables.
 * [, 1]  `mpg`	 Miles/(US) gallon
 * [, 2]	 `cyl`	 Number of cylinders
@@ -49,7 +53,7 @@ summary(lm(mpg ~ ., data = mtcars))$coefficients
 ## carb        -0.19942    0.82875 -0.2406  0.81218
 ```
 
-We will then use the **backward-elimination** strategy to eliminate the unrelated variables one-at-a-time. It means, we first fit a model which includes all the potential variables as above, now we drop the variable `cyl` as it has the largest p-value, then we refit the model. All the details of the model selection is attached in Appendix A.
+We will then use the **backward-elimination** strategy to eliminate the unrelated variables one-at-a-time. It means, we first fit a model which includes all the potential variables as above, now we drop the variable `cyl` as it has the largest p-value, then we refit the model. All the details of the model selection are attached in Appendix A.
 
 In the new model, there is no strong evidence that the coefficient of the variable `vs` is different from zero even though its p-value decreased a little bit, so we again eliminate the variable with the largest p-value `vs` and refit the model
 
@@ -97,7 +101,7 @@ plot(fit)
 
 We note that the residuals show no obvious pattern, so it is reasonable to try to fit a linear model to the data.
 
-## Summary
+## Conclusion
 Now with all the previous analysis, we can conclude that our linear model is a resonable fit. As
 
 ```r
